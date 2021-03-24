@@ -35,7 +35,7 @@ exports.postLogin = async (req, res, next) => {
         userId: user._id.toString()
       },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: '20m' }
     );
 
     // give the user their token

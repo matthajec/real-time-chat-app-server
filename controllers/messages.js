@@ -29,7 +29,7 @@ exports.postMessage = async (req, res, next) => {
     // make sure the user exists
     if (!creator) {
       const error = new Error('User does not exist');
-      const statusCode = 404;
+      error.statusCode = 404;
       throw error;
     }
 
@@ -81,7 +81,7 @@ exports.deleteMessage = async (req, res, next) => {
     // check if the request came from the creator of the message
     if (message.creator.toString() !== req.userId.toString()) {
       const error = new Error('You do not own this message');
-      const statusCode = 401;
+      error.statusCode = 401;
       throw error;
     }
 
