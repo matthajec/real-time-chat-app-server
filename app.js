@@ -1,11 +1,11 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const { urlencoded } = require('body-parser');
+const { json } = require('body-parser');
 
 const app = express();
 
-app.use(urlencoded({ extended: false }));
+app.use(json({ extended: false }));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,7 +20,7 @@ app.use('/auth', require('./routes/auth'));
 app.use((error, req, res, next) => {
   console.log(error);
   const status = error.statusCode || 500;
-  const message = error.message;
+  const message = error.message || 'An unknown error occured...';
   const data = error.data;
   res.status(status).json({ message: message, data: data });
 });
@@ -28,7 +28,8 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: true
   })
   .then(() => {
     const server = app.listen(8080);

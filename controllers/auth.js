@@ -39,7 +39,7 @@ exports.postLogin = async (req, res, next) => {
     );
 
     // give the user their token
-    res.status(200).json({ message: "Logged in successfully", token: token });
+    res.status(200).json({ message: "Logged in successfully", token: 'Bearer ' + token });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
