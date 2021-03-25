@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const messagesController = require('../controllers/messages');
-const isAuth = require('../middleware/is-auth');
+const { isAuth } = require('../middleware');
 
 router.get('/', isAuth, messagesController.getMessages);
 router.post('/', isAuth, messagesController.postMessage);
