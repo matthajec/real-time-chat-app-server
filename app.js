@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const { json } = require('body-parser');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 
@@ -35,7 +36,31 @@ mongoose
     const server = app.listen(8080);
     const io = require('./socket').init(server);
     io.on('connection', (socket) => {
-      console.log('Client Connected');
+      socket.on('authorization', (_token) => {
+        try {
+          if (!_token) {
+            const error = new Error('no token provided');
+            error.statusCode = 401;
+            throw error;
+          }
+
+          const token = _token.split(' ')[1];
+
+          const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+          if (!decodedToken) {
+            const error = new Error('invalid token');
+            error.statusCode = 401;
+            throw error;
+          }
+
+          socket.join('main-chatroom');
+          socket.emit('authorization', { status: 'joined' });
+        } catch (err) {
+          socket.emit('authorization', { status: 'error', error: err });
+        }
+
+      });
     });
   })
   .catch(err => {

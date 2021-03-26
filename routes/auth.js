@@ -14,7 +14,7 @@ router.post(
     body('username')
       .custom(async (value, { req }) => {
         // get the info for the account trying to be logged into
-        const user = await User.findOne({ username: value });
+        const user = await User.findOne({ normalizedUsername: value.toLowerCase() });
 
         // check if there is a user
         if (!user) {

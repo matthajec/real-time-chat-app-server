@@ -6,7 +6,11 @@ const User = require('../models/user');
 exports.getMessages = async (req, res, next) => {
   try {
     // get the last 100 messages sorted by date
-    const messages = await Message.find().sort({ createdAt: -1 }).limit(100).populate('creator', 'username _id');
+    const messages = await Message
+      .find()
+      .sort({ createdAt: -1 })
+      .limit(100)
+      .populate('creator', 'username _id');
 
     // send the messages
     res.status(200).json({
@@ -51,8 +55,8 @@ exports.postMessage = async (req, res, next) => {
     // populate the creator field
     const populatedMessage = await Message.findById(savedMessage._id).populate('creator', 'username _id');
 
-    // emit the event using the websocket
-    io.getIO().emit('messages', {
+    // emit the event using the websocket to the main-chatroom
+    io.getIO().to('main-chatroom').emit('messages', {
       action: 'post',
       message: populatedMessage
     });
@@ -101,7 +105,7 @@ exports.deleteMessage = async (req, res, next) => {
     await user.save();
 
     // emit the event using the websocket
-    io.getIO().emit('messages', {
+    io.getIO().to('main-chatroom').emit('messages', {
       action: 'delete',
       messageId: messageId
     });
