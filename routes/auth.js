@@ -53,7 +53,7 @@ router.post(
   [
     body('username')
       .custom(async value => {
-        if (await User.findOne({ username: value })) {
+        if (await User.findOne({ normalizedUsername: value.toLowerCase() })) {
           return Promise.reject('Username already exists');
         }
         Promise.resolve();
