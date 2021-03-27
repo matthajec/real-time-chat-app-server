@@ -36,30 +36,38 @@ mongoose
     const server = app.listen(8080);
     const io = require('./socket').init(server);
     io.on('connection', (socket) => {
-      socket.on('authorization', (_token) => {
+      socket.on('authorization', (_token) => { // listen on authorization channel
         try {
+
+          // handle no token being sent
           if (!_token) {
             const error = new Error('no token provided');
             error.statusCode = 401;
             throw error;
           }
 
+          // extract the actual jwt
           const token = _token.split(' ')[1];
 
+          // test the jwt for validity
           const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
+          // handle invalid token
           if (!decodedToken) {
             const error = new Error('invalid token');
             error.statusCode = 401;
             throw error;
           }
 
+          // join the chatroom
           socket.join('main-chatroom');
+
+          // tell the client they've joined the chatroom
           socket.emit('authorization', { status: 'joined' });
         } catch (err) {
+          // send the error to the client
           socket.emit('authorization', { status: 'error', error: err });
         }
-
       });
     });
   })
