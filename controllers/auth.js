@@ -11,7 +11,7 @@ exports.postLogin = async (req, res, next) => {
     const password = req.body.password;
 
     // find the user with the given username
-    const user = req.USER_FOR_LOGGING_IN;
+    const user = req.temp.user;
 
 
     // generate a token
@@ -21,7 +21,7 @@ exports.postLogin = async (req, res, next) => {
         userId: user._id.toString()
       },
       process.env.JWT_SECRET,
-      { expiresIn: '20m' }
+      { expiresIn: '15m' }
     );
 
     // give the user their token

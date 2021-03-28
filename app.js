@@ -12,6 +12,7 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  req.temp = {}; // this is for data that is more local to one "chain" of handlers
   next();
 });
 
@@ -41,7 +42,7 @@ mongoose
 
           // handle no token being sent
           if (!_token) {
-            const error = new Error('no token provided');
+            const error = new Error('bad_token');
             error.statusCode = 401;
             throw error;
           }
@@ -54,7 +55,7 @@ mongoose
 
           // handle invalid token
           if (!decodedToken) {
-            const error = new Error('invalid token');
+            const error = new Error('bad_token');
             error.statusCode = 401;
             throw error;
           }

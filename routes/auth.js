@@ -23,7 +23,7 @@ router.post(
 
         // save the user in the request so i don't need to query the database again later
         // a weird name is used to prevent future bugs
-        req.USER_FOR_LOGGING_IN = user;
+        req.temp.user = user;
 
         // resolve the promise
         Promise.resolve();
@@ -31,12 +31,12 @@ router.post(
     body('password')
       .custom(async (value, { req }) => {
         // make sure we don't try to validate a password for a user that doesn't exist
-        if (!req.USER_FOR_LOGGING_IN) {
+        if (!req.temp.user) {
           return Promise.resolve();
         }
 
         // check if the password is correct
-        const isEqual = await bcrypt.compare(value, req.USER_FOR_LOGGING_IN.password);
+        const isEqual = await bcrypt.compare(value, req.temp.user.password);
         if (!isEqual) {
           return Promise.reject('Inncorrect password');
         }
